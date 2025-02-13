@@ -136,17 +136,17 @@ public class MembershipController {
             amount
             membershipId
          */
-        String encodedResponse = params.getString("response");
-
-        byte[] decodedBytes = Base64.getDecoder().decode(encodedResponse);
-        String decodedString = new String(decodedBytes);
-
-        ObjectMapper objectMapper = new ObjectMapper();
-        JsonNode decodedJson = objectMapper.readTree(decodedString);
-        String code = decodedJson.get("code").asText();
-
-        // if status is error, then return
-        if ("PAYMENT_ERROR".equals(code)) return;
+//        String encodedResponse = params.getString("response");
+//
+//        byte[] decodedBytes = Base64.getDecoder().decode(encodedResponse);
+//        String decodedString = new String(decodedBytes);
+//
+//        ObjectMapper objectMapper = new ObjectMapper();
+//        JsonNode decodedJson = objectMapper.readTree(decodedString);
+//        String code = decodedJson.get("code").asText();
+//
+//        // if status is error, then return
+//        if ("PAYMENT_ERROR".equals(code)) return;
 
         Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("Asia/Kolkata"));
         calendar.set(Calendar.HOUR_OF_DAY, 0);
@@ -187,7 +187,7 @@ public class MembershipController {
             assert userMembership != null;
             assert membership != null;
 
-            user.setLastPaymentAmount(membership.getSubscriptionFees());
+            user.setLastPaymentAmount(Integer.valueOf(amount));
             user.setLastPaymentDate("" + new Date().getTime());
 
             //set user's membership type and start/end date & append coins in user's wallet
@@ -215,11 +215,11 @@ public class MembershipController {
             userMembership.setUserId(user.getId());
             userMembership.setPhone(user.getPhone());
 
-            plog.setPaymentDate(user.getLastPaymentDate());
-            plog.setPhone(user.getPhone());
-            plog.setId(UUID.randomUUID().toString());
-            plog.setAmount(user.getLastPaymentAmount());
-            plog.setType("membership");
+//            plog.setPaymentDate(user.getLastPaymentDate());
+//            plog.setPhone(user.getPhone());
+//            plog.setId(UUID.randomUUID().toString());
+//            plog.setAmount(user.getLastPaymentAmount());
+//            plog.setType("membership");
             break;
         }
 
@@ -237,7 +237,7 @@ public class MembershipController {
 
         userProfileService.save(user);
         userMembershipsService.save(userMembership);
-        paymentLogService.save(plog);
+//        paymentLogService.save(plog);
         coinTransactionsService.save(transaction);
 
         //send email to user
@@ -322,17 +322,17 @@ public class MembershipController {
     @ApiOperation(value = "to renew a user's subscription")
     @PostMapping("/renew")
     public void renewSubscription(@RequestBody JSONObject params, @RequestParam String phoneNumber, @RequestParam String amount, @RequestParam String membershipId) throws ExecutionException, InterruptedException, FirebaseMessagingException, JsonProcessingException {
-        String encodedResponse = params.getString("response");
-
-        byte[] decodedBytes = Base64.getDecoder().decode(encodedResponse);
-        String decodedString = new String(decodedBytes);
-
-        ObjectMapper objectMapper = new ObjectMapper();
-        JsonNode decodedJson = objectMapper.readTree(decodedString);
-        String code = decodedJson.get("code").asText();
-
-        //check the status of the payment, if it is error, return
-        if ("PAYMENT_ERROR".equals(code)) return;
+//        String encodedResponse = params.getString("response");
+//
+//        byte[] decodedBytes = Base64.getDecoder().decode(encodedResponse);
+//        String decodedString = new String(decodedBytes);
+//
+//        ObjectMapper objectMapper = new ObjectMapper();
+//        JsonNode decodedJson = objectMapper.readTree(decodedString);
+//        String code = decodedJson.get("code").asText();
+//
+//        //check the status of the payment, if it is error, return
+//        if ("PAYMENT_ERROR".equals(code)) return;
 
         Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("Asia/Kolkata"));
         calendar.set(Calendar.HOUR_OF_DAY, 0);
@@ -377,15 +377,15 @@ public class MembershipController {
         for (DocumentSnapshot document : querySnapshot2.get().getDocuments()) {
             user = document.toObject(UserProfile.class);
             user.setLastPaymentDate("" + new Date().getTime());
-            user.setLastPaymentAmount(membership.getSubscriptionFees());
+            user.setLastPaymentAmount(Integer.valueOf(amount));
 
-            PaymentLog plog = new PaymentLog();
-            plog.setPaymentDate(user.getLastPaymentDate());
-            plog.setPhone(user.getPhone());
-            plog.setId(UUID.randomUUID().toString());
-            plog.setAmount(user.getLastPaymentAmount());
-            plog.setType("membership");
-            paymentLogService.save(plog);
+//            PaymentLog plog = new PaymentLog();
+//            plog.setPaymentDate(user.getLastPaymentDate());
+//            plog.setPhone(user.getPhone());
+//            plog.setId(UUID.randomUUID().toString());
+//            plog.setAmount(user.getLastPaymentAmount());
+//            plog.setType("membership");
+//            paymentLogService.save(plog);
             break;
         }
 
@@ -421,17 +421,17 @@ public class MembershipController {
          *   amount
          * */
 
-        String encodedResponse = params.getString("response");
-
-        byte[] decodedBytes = Base64.getDecoder().decode(encodedResponse);
-        String decodedString = new String(decodedBytes);
-
-        ObjectMapper objectMapper = new ObjectMapper();
-        JsonNode decodedJson = objectMapper.readTree(decodedString);
-        String code = decodedJson.get("code").asText();
-
-        //check the status of the payment, if it is error, return
-        if ("PAYMENT_ERROR".equals(code)) return;
+//        String encodedResponse = params.getString("response");
+//
+//        byte[] decodedBytes = Base64.getDecoder().decode(encodedResponse);
+//        String decodedString = new String(decodedBytes);
+//
+//        ObjectMapper objectMapper = new ObjectMapper();
+//        JsonNode decodedJson = objectMapper.readTree(decodedString);
+//        String code = decodedJson.get("code").asText();
+//
+//        //check the status of the payment, if it is error, return
+//        if ("PAYMENT_ERROR".equals(code)) return;
 
         Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("Asia/Kolkata"));
         calendar.set(Calendar.HOUR_OF_DAY, 0);
@@ -481,13 +481,13 @@ public class MembershipController {
         for (DocumentSnapshot document : querySnapshot2.get().getDocuments()) {
             user = document.toObject(UserProfile.class);
             user.setLastPaymentDate("" + new Date().getTime());
-            user.setLastPaymentAmount(membership.getSubscriptionFees());
+            user.setLastPaymentAmount(Integer.valueOf(amount));
 
-            plog.setPaymentDate(user.getLastPaymentDate());
-            plog.setPhone(user.getPhone());
-            plog.setId(UUID.randomUUID().toString());
-            plog.setAmount(user.getLastPaymentAmount());
-            plog.setType("membership");
+//            plog.setPaymentDate(user.getLastPaymentDate());
+//            plog.setPhone(user.getPhone());
+//            plog.setId(UUID.randomUUID().toString());
+//            plog.setAmount(user.getLastPaymentAmount());
+//            plog.setType("membership");
 
             // add this transaction to user's history
             newTransaction.setAmount(membership.getSubscriptionFees());
@@ -515,7 +515,7 @@ public class MembershipController {
 
         userMembershipsService.save(userMember);
         userProfileService.save(user);
-        paymentLogService.save(plog);
+//        paymentLogService.save(plog);
         coinTransactionsService.save(newTransaction);
 
         // send fcm notification to the frontend for redux update
@@ -527,17 +527,17 @@ public class MembershipController {
     @ApiOperation(value = "to top-up a user's wallet")
     @PostMapping("/topUp")
     public void topUpWallet(@RequestBody JSONObject params, @RequestParam String phoneNumber, @RequestParam String amount, @RequestParam String coinsToGive) throws ExecutionException, InterruptedException, IOException, FirebaseMessagingException {
-        String encodedResponse = params.getString("response");
-
-        byte[] decodedBytes = Base64.getDecoder().decode(encodedResponse);
-        String decodedString = new String(decodedBytes);
-
-        ObjectMapper objectMapper = new ObjectMapper();
-        JsonNode decodedJson = objectMapper.readTree(decodedString);
-        String code = decodedJson.get("code").asText();
-
-        //check the status of the payment, if it is error, return
-        if ("PAYMENT_ERROR".equals(code)) return;
+//        String encodedResponse = params.getString("response");
+//
+//        byte[] decodedBytes = Base64.getDecoder().decode(encodedResponse);
+//        String decodedString = new String(decodedBytes);
+//
+//        ObjectMapper objectMapper = new ObjectMapper();
+//        JsonNode decodedJson = objectMapper.readTree(decodedString);
+//        String code = decodedJson.get("code").asText();
+//
+//        //check the status of the payment, if it is error, return
+//        if ("PAYMENT_ERROR".equals(code)) return;
 
         JSONObject getUserByPhoneParams = new JSONObject();
         getUserByPhoneParams.put("phoneNumber", phoneNumber);
@@ -546,12 +546,12 @@ public class MembershipController {
         user.setLastPaymentAmount(Integer.parseInt(amount) / 100);
         user.setLastPaymentDate("" + new Date().getTime());
 
-        PaymentLog plog = new PaymentLog();
-        plog.setId(UUID.randomUUID().toString());
-        plog.setAmount(Integer.parseInt(amount) / 100);
-        plog.setPhone(user.getPhone());
-        plog.setType("topUp");
-        plog.setPaymentDate("" + new Date().getTime());
+//        PaymentLog plog = new PaymentLog();
+//        plog.setId(UUID.randomUUID().toString());
+//        plog.setAmount(Integer.parseInt(amount) / 100);
+//        plog.setPhone(user.getPhone());
+//        plog.setType("topUp");
+//        plog.setPaymentDate("" + new Date().getTime());
 
         JSONObject getMembershipByPhoneParams = new JSONObject();
         getMembershipByPhoneParams.put("phone", phoneNumber);
@@ -566,17 +566,17 @@ public class MembershipController {
         newTransaction.setAmount(Integer.parseInt(coinsToGive));
         newTransaction.setSource("wallet");
         newTransaction.setType(TransactionTypeEnum.CREDIT);
-        newTransaction.setSourceId(plog.getId());
+        newTransaction.setSourceId(params.getString("id"));
         newTransaction.setTransactionDate(new Date().getTime());
         newTransaction.setTitle("Top up Wallet");
-        newTransaction.setSourceId(plog.getId());
+        newTransaction.setSourceId(params.getString("id"));
         newTransaction.setId(UUID.randomUUID().toString());
         newTransaction.setPhone(user.getPhone());
 
 
         userMembershipsService.save(userMember);
         userProfileService.save(user);
-        paymentLogService.save(plog);
+//        paymentLogService.save(plog);
         coinTransactionsService.save(newTransaction);
 
         // send fcm notification to the frontend for redux update
