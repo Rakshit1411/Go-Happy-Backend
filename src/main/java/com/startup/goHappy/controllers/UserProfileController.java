@@ -174,8 +174,16 @@ public class UserProfileController {
         return outputStream -> outputStream.flush();
     }
 
+    /*
+    * This is used in @PaytringController.java to add the payment amount and date to user profile, not used anywhere else
+    * */
     @PostMapping("setPaymentData")
     public void setPaymentData(@RequestBody JSONObject params) throws IOException, InterruptedException, ExecutionException {
+        /*
+        * @params
+        * phoneNumber : String
+        * amount : String
+        * */
         CollectionReference userProfiles = userProfileService.getCollectionReference();
 
         Query profileQuery = userProfiles.whereEqualTo("phone", params.getString("phoneNumber"));
@@ -184,27 +192,23 @@ public class UserProfileController {
         UserProfile user = null;
         for (DocumentSnapshot document : querySnapshot1.get().getDocuments()) {
             user = document.toObject(UserProfile.class);
+            assert user != null;
             user.setLastPaymentAmount(Integer.parseInt(params.getString("amount")));
             user.setLastPaymentDate("" + new Date().getTime());
-
-            PaymentLog log = new PaymentLog();
-            log.setPaymentDate(user.getLastPaymentDate());
-            log.setPhone(user.getPhone());
-            log.setId(UUID.randomUUID().toString());
-            log.setAmount(user.getLastPaymentAmount());
-            log.setType("contribution");
-            paymentLogService.save(log);
-
-
             break;
         }
         userProfileService.save(user);
 
     }
-
+     /*
+     * This is used for phonePe's callback, when the payment is in terminated state, then this one is called, this is not used with paytring's implementation, can be removed once we are fully moved out of phone pe
+     * */
     @PostMapping("setPaymentDataContribution")
     public void setPaymentDataContribution(@RequestParam String phoneNumber, @RequestBody JSONObject params) throws IOException, InterruptedException, ExecutionException {
         CollectionReference userProfiles = userProfileService.getCollectionReference();
+        /*
+        * The below code checks for the payment status, whether success or false and proceeds accordingly
+        * */
         String encodedResponse = params.getString("response");
 
         byte[] decodedBytes = Base64.getDecoder().decode(encodedResponse);
@@ -224,18 +228,9 @@ public class UserProfileController {
         UserProfile user = null;
         for (DocumentSnapshot document : querySnapshot1.get().getDocuments()) {
             user = document.toObject(UserProfile.class);
-            user.setLastPaymentAmount(amount);
+            assert user != null;
+            user.setLastPaymentAmount(Integer.parseInt(params.getString("amount")));
             user.setLastPaymentDate("" + new Date().getTime());
-
-            PaymentLog log = new PaymentLog();
-            log.setPaymentDate(user.getLastPaymentDate());
-            log.setPhone(user.getPhone());
-            log.setId(merchantTransactionId);
-            log.setAmount(user.getLastPaymentAmount());
-            log.setType("contribution");
-            paymentLogService.save(log);
-
-
             break;
         }
         userProfileService.save(user);
@@ -243,7 +238,7 @@ public class UserProfileController {
     }
 
     @PostMapping("setPaymentDataWorkshop")
-    public void setPaymentDataWorkshop(@RequestParam String phoneNumber, @RequestParam String orderId,@RequestParam String tambolaTicket,@RequestBody JSONObject params) throws IOException, InterruptedException, ExecutionException, MessagingException, GeneralSecurityException {
+    public void setPaymentDataWorkshop(@RequestParam String phoneNumber, @RequestParam String orderId, @RequestParam String tambolaTicket, @RequestBody JSONObject params) throws IOException, InterruptedException, ExecutionException, MessagingException, GeneralSecurityException {
         String encodedResponse = params.getString("response");
 
         byte[] decodedBytes = Base64.getDecoder().decode(encodedResponse);
@@ -268,7 +263,7 @@ public class UserProfileController {
 
         CollectionReference userProfiles = userProfileService.getCollectionReference();
         if(!StringUtils.isEmpty(params.getString("phone"))) {
-    
+
         if (params.getString("phone").startsWith("+")) {
                 params.put("phone", params.getString("phone").substring(1));
             }
